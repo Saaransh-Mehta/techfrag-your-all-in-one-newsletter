@@ -1,65 +1,133 @@
-import Image from "next/image";
+import NewsCard from '@/components/NewsCard';
+import SubscriptionForm from '@/components/SubscriptionForm';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { prisma } from '@/lib/prisma';
 
-export default function Home() {
+async function getNewsArticles() {
+  try {
+    const articles = await prisma.newsArticle.findMany({
+      orderBy: {
+        publishedAt: 'desc',
+      },
+      take: 7, // Get 7 articles (1 featured + 6 latest)
+    });
+    return articles;
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const articles = await getNewsArticles();
+  const featuredArticle = articles[0];
+  const latestArticles = articles.slice(1, 7);
+
+  if (!featuredArticle) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Header />
+        <main className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">No Articles Yet</h2>
+            <p className="text-slate-600 mb-8">Check back soon for the latest tech news!</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+      
+      <main>
+        {/* Hero Section with Featured Article */}
+        <section className="bg-white border-b border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="mb-6">
+              <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-orange-100 text-orange-700 rounded">
+                Featured Story
+              </span>
+              <h2 className="text-lg text-slate-600 mt-2">The most important story of the week</h2>
+            </div>
+            <NewsCard article={featuredArticle} featured />
+          </div>
+        </section>
+
+        {/* Latest News Grid */}
+        <section id="latest" className="py-12 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Latest News</h2>
+              <p className="text-slate-600">
+                Stay updated with the latest in tech, science, and innovation
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {latestArticles.map((article) => (
+                <NewsCard key={article.id} article={article} />
+              ))}
+            </div>
+
+            {/* View All Link */}
+            <div className="text-center mt-10">
+              <button className="px-8 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors">
+                Load More Articles
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Subscription Section */}
+        <section id="subscribe" className="py-12 bg-white border-y border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SubscriptionForm />
+          </div>
+        </section>
+
+        {/* Stats Section */}
+          {/* Why Join TechFrag - brand-focused benefits */}
+          <section className="py-12 bg-slate-900 text-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white">Why join TechFrag?</h2>
+                <p className="text-slate-400 mt-2">Short, sharp tech insights designed for builders and curious minds.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="p-6 bg-slate-800 rounded-lg">
+                  <div className="text-2xl mb-2 text-orange-500">Curated Insights</div>
+                  <div className="text-slate-400">Handpicked stories and analysis so you get only what matters.</div>
+                </div>
+
+                <div className="p-6 bg-slate-800 rounded-lg">
+                  <div className="text-2xl mb-2 text-orange-500">Actionable Briefs</div>
+                  <div className="text-slate-400">Practical takeaways you can use the same day — no fluff.</div>
+                </div>
+
+                <div className="p-6 bg-slate-800 rounded-lg">
+                  <div className="text-2xl mb-2 text-orange-500">Exclusive Access</div>
+                  <div className="text-slate-400">Early access to deep dives, interviews, and special editions.</div>
+                </div>
+
+                <div className="p-6 bg-slate-800 rounded-lg">
+                  <div className="text-2xl mb-2 text-orange-500">Ad-free Experience</div>
+                  <div className="text-slate-400">A clean, focused newsletter for readers who value quality.</div>
+                </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                <a href="#subscribe" className="inline-block px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors">Join the list</a>
+              </div>
+            </div>
+          </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

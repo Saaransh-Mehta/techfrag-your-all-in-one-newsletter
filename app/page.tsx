@@ -18,7 +18,14 @@ async function getNewsArticles() {
       },
       take: 6, // Get 6 articles (3 featured + 3 latest initially)
     });
-    return articles;
+    
+    // Serialize dates to strings for client components
+    return articles.map(article => ({
+      ...article,
+      publishedAt: article.publishedAt.toISOString(),
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
+    }));
   } catch (error) {
     console.error('Error fetching articles:', error);
     return [];

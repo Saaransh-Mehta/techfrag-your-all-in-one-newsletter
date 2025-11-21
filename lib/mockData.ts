@@ -189,7 +189,11 @@ export const getNewsById = (id: string): NewsArticle | undefined => {
 export const getLatestNews = (limit: number = 5, excludeId?: string): NewsArticle[] => {
   return mockNews
     .filter(news => news.id !== excludeId)
-    .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+    .sort((a, b) => {
+      const aTime = typeof a.publishedAt === 'string' ? new Date(a.publishedAt).getTime() : a.publishedAt.getTime();
+      const bTime = typeof b.publishedAt === 'string' ? new Date(b.publishedAt).getTime() : b.publishedAt.getTime();
+      return bTime - aTime;
+    })
     .slice(0, limit);
 };
 

@@ -15,7 +15,15 @@ export async function GET(request: NextRequest) {
       take: take,
     });
 
-    return NextResponse.json({ articles });
+    // Serialize dates to strings for JSON response
+    const serializedArticles = articles.map(article => ({
+      ...article,
+      publishedAt: article.publishedAt.toISOString(),
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
+    }));
+
+    return NextResponse.json({ articles: serializedArticles });
   } catch (error) {
     console.error('Error fetching articles:', error);
     return NextResponse.json(

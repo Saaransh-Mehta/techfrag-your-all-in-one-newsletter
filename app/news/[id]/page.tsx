@@ -48,12 +48,20 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
 
   const latestNews = await getLatestArticles(article.id);
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
+  const formatDate = (date: Date | string) => {
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) {
+        return 'Date unavailable';
+      }
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }).format(dateObj);
+    } catch (error) {
+      return 'Date unavailable';
+    }
   };
 
   return (

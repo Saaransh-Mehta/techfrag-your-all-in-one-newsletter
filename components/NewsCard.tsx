@@ -8,12 +8,20 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ article, featured = false }: NewsCardProps) {
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
+  const formatDate = (date: Date | string) => {
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) {
+        return 'Date unavailable';
+      }
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }).format(dateObj);
+    } catch (error) {
+      return 'Date unavailable';
+    }
   };
 
   if (featured) {

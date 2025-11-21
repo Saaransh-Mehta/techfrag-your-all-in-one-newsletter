@@ -4,7 +4,7 @@ export interface NewsArticle {
   excerpt: string;
   content: string;
   author: string;
-  publishedAt: Date;
+  publishedAt: Date | string; // Date object on server, ISO string on client
   category: string;
   imageUrl: string;
   readTime: number; // in minutes
@@ -12,5 +12,5 @@ export interface NewsArticle {
 
 export interface Subscriber {
   email: string;
-  subscribedAt: Date;
+  subscribedAt: Date | string; // Date object on server, ISO string on client
 }

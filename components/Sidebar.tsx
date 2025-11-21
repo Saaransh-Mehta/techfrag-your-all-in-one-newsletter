@@ -8,11 +8,19 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ latestNews, title = 'Latest News' }: SidebarProps) {
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
+  const formatDate = (date: Date | string) => {
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) {
+        return 'Date unavailable';
+      }
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+      }).format(dateObj);
+    } catch (error) {
+      return 'Date unavailable';
+    }
   };
 
   return (

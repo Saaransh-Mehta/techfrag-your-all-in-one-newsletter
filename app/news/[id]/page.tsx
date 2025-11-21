@@ -5,7 +5,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 import { prisma } from '@/lib/prisma';
-import DOMPurify from 'isomorphic-dompurify';
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify';
 
 async function getArticleById(id: string) {
   try {
@@ -48,6 +49,11 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
   }
 
   const latestNews = await getLatestArticles(article.id);
+
+  // Sanitize content on the server side
+  const window = new JSDOM('').window;
+  const purify = DOMPurify(window);
+  const sanitizedContent = purify.sanitize(article.content);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -118,7 +124,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
                   {/* Article Content */}
                   <div 
                     className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-p:text-slate-700 prose-p:leading-relaxed prose-p:mb-4"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
+                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                   />
 
                   {/* Share Section */}

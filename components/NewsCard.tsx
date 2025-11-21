@@ -18,7 +18,11 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
 
   if (featured) {
     return (
-      <Link href={`/news/${article.id}`} className="block group">
+      <Link 
+        href={`/news/${article.id}`} 
+        className="block group cursor-pointer touch-manipulation"
+        prefetch={true}
+      >
         <article className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
           <div className="relative h-[450px]">
             <Image
@@ -26,10 +30,11 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
               alt={article.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
+              priority={true}
             />
             <div className="absolute inset-0 bg-linear-to-t from-slate-900/90 via-slate-900/50 to-transparent" />
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-6">
+          <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
             <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold uppercase tracking-wider bg-orange-500 text-white rounded">
               {article.category}
             </span>
@@ -53,7 +58,11 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
   }
 
   return (
-    <Link href={`/news/${article.id}`} className="block group">
+    <Link 
+      href={`/news/${article.id}`} 
+      className="block group cursor-pointer touch-manipulation"
+      prefetch={true}
+    >
       <article className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col border border-slate-200">
         <div className="relative h-48 overflow-hidden">
           <Image

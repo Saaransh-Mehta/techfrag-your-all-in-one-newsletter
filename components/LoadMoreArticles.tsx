@@ -16,12 +16,12 @@ export default function LoadMoreArticles({ initialArticles }: LoadMoreArticlesPr
   const loadMore = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/articles?skip=${articles.length}&take=6`);
+      const response = await fetch(`/api/articles?skip=${articles.length}&take=3`);
       const data = await response.json();
       
       if (data.articles && data.articles.length > 0) {
         setArticles([...articles, ...data.articles]);
-        if (data.articles.length < 6) {
+        if (data.articles.length < 3) {
           setHasMore(false);
         }
       } else {

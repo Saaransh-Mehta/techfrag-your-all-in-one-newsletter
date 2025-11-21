@@ -16,7 +16,7 @@ async function getNewsArticles() {
       orderBy: {
         publishedAt: 'desc',
       },
-      take: 12, // Get 12 articles (3 featured + 9 latest initially)
+      take: 6, // Get 6 articles (3 featured + 3 latest initially)
     });
     return articles;
   } catch (error) {
@@ -28,7 +28,7 @@ async function getNewsArticles() {
 export default async function Home() {
   const articles = await getNewsArticles();
   const featuredArticles = articles.slice(0, 3); // Top 3 for carousel
-  const latestArticles = articles.slice(3, 12); // Next 9 for grid
+  const latestArticles = articles.slice(3, 6); // Next 3 for grid initially
 
   if (articles.length === 0) {
     return (

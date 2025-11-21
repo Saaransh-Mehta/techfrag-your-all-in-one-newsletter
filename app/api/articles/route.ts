@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const skip = parseInt(searchParams.get('skip') || '0');
-    const take = parseInt(searchParams.get('take') || '6');
+    const take = parseInt(searchParams.get('take') || '3');
 
     const articles = await prisma.newsArticle.findMany({
       orderBy: {

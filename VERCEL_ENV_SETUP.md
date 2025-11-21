@@ -18,10 +18,10 @@
 
    | Variable Name          | Value                                                                                                                                                  | Environment                      |
    | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------- |
-   | `DATABASE_URL`         | `postgresql://neondb_owner:npg_p1FGi2SlTtfN@ep-hidden-dust-adeu5zv5-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require` | Production, Preview, Development |
-   | `RESEND_API_KEY`       | `re_XMirAPgA_FnSVvGq1zdzaBB14iuA53TmN`                                                                                                                 | Production, Preview, Development |
+   | `DATABASE_URL`         | Get from your local `.env` file or Neon database dashboard | Production, Preview, Development |
+   | `RESEND_API_KEY`       | Get from your local `.env` file or https://resend.com/api-keys                                                                                                                 | Production, Preview, Development |
    | `NEXT_PUBLIC_BASE_URL` | `https://techfrag-your-all-in-one-newsletter.vercel.app`                                                                                               | Production, Preview, Development |
-   | `SESSION_SECRET`       | `your-super-secret-key-change-this-in-production-minimum-32-characters-long`                                                                           | Production, Preview, Development |
+   | `SESSION_SECRET`       | Generate a secure random string (minimum 32 characters long)                                                                           | Production, Preview, Development |
    | `NODE_ENV`             | `production`                                                                                                                                           | Production only                  |
 
 4. **After Adding Variables:**

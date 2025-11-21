@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 import { prisma } from '@/lib/prisma';
+import DOMPurify from 'isomorphic-dompurify';
 
 async function getArticleById(id: string) {
   try {
@@ -117,7 +118,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
                   {/* Article Content */}
                   <div 
                     className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-p:text-slate-700 prose-p:leading-relaxed prose-p:mb-4"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
                   />
 
                   {/* Share Section */}

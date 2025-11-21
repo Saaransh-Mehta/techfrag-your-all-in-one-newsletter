@@ -5,8 +5,13 @@ import { prisma } from './prisma';
 if (!process.env.RESEND_API_KEY) {
   console.warn('⚠️ RESEND_API_KEY not found in environment variables. Email functionality will not work.');
 }
-
-const resend = new Resend(process.env.RESEND_API_KEY || 'dummy_key_for_build');
+let resend: Resend | null = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+} else {
+  // Keep resend as null in environments without a configured key.
+  resend = null;
+}
 
 interface NewsArticle {
   id: string;
@@ -230,7 +235,7 @@ function generateWelcomeEmail(): string {
 export async function sendNewsletterToSubscribers(article: NewsArticle): Promise<void> {
   try {
     // Check if API key is configured
-    if (!process.env.RESEND_API_KEY) {
+    if (!resend) {
       console.error('❌ Cannot send emails: RESEND_API_KEY not configured');
       return;
     }
@@ -253,7 +258,7 @@ export async function sendNewsletterToSubscribers(article: NewsArticle): Promise
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const testRecipient = 'delivered@resend.dev';
     
-    if (isDevelopment) {
+        if (isDevelopment) {
       console.warn('⚠️  DEVELOPMENT MODE: Emails will be sent to test recipient (delivered@resend.dev)');
       console.warn('⚠️  To send to real subscribers, verify your domain at https://resend.com/domains');
     }
@@ -294,16 +299,15 @@ export async function sendNewsletterToSubscribers(article: NewsArticle): Promise
           successCount = subscribers.length; // Count all subscribers as notified (in test mode)
         } else {
           // Production: Send batch of emails
+          // IMPORTANT: Replace 'newsletter@your-verified-domain.com' with your actual verified domain
           const results = await resend.batch.send(
             batch.map(email => ({
-              from: 'TechFrag Newsletter <noreply@yourdomain.com>', // Update with your verified domain
+              from: 'TechFrag Newsletter <newsletter@your-verified-domain.com>',
               to: email,
               subject: `📰 New Article: ${article.title}`,
               html: emailHtml,
             }))
-          );
-          
-          console.log(`Batch ${i + 1} results:`, JSON.stringify(results, null, 2));
+          );          console.log(`Batch ${i + 1} results:`, JSON.stringify(results, null, 2));
           successCount += batch.length;
         }
 
@@ -331,7 +335,7 @@ export async function sendNewsletterToSubscribers(article: NewsArticle): Promise
  */
 async function sendWelcomeEmail(email: string): Promise<void> {
   try {
-    if (!process.env.RESEND_API_KEY) {
+    if (!resend) {
       console.error('❌ Cannot send welcome email: RESEND_API_KEY not configured');
       return;
     }

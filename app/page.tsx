@@ -3,6 +3,12 @@ import SubscriptionForm from '@/components/SubscriptionForm';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { prisma } from '@/lib/prisma';
+import FeaturedCarousel from '@/components/FeaturedCarousel';
+import LoadMoreArticles from '@/components/LoadMoreArticles';
+
+// Disable caching to ensure fresh content
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function getNewsArticles() {
   try {
@@ -10,7 +16,7 @@ async function getNewsArticles() {
       orderBy: {
         publishedAt: 'desc',
       },
-      take: 7, // Get 7 articles (1 featured + 6 latest)
+      take: 12, // Get 12 articles (3 featured + 9 latest initially)
     });
     return articles;
   } catch (error) {
@@ -21,10 +27,10 @@ async function getNewsArticles() {
 
 export default async function Home() {
   const articles = await getNewsArticles();
-  const featuredArticle = articles[0];
-  const latestArticles = articles.slice(1, 7);
+  const featuredArticles = articles.slice(0, 3); // Top 3 for carousel
+  const latestArticles = articles.slice(3, 12); // Next 9 for grid
 
-  if (!featuredArticle) {
+  if (articles.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50">
         <Header />
@@ -44,16 +50,16 @@ export default async function Home() {
       <Header />
       
       <main>
-        {/* Hero Section with Featured Article */}
+        {/* Hero Section with Featured Carousel */}
         <section className="bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-6">
               <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-orange-100 text-orange-700 rounded">
-                Featured Story
+                Featured Stories
               </span>
-              <h2 className="text-lg text-slate-600 mt-2">The most important story of the week</h2>
+              <h2 className="text-lg text-slate-600 mt-2">The most important stories of the week</h2>
             </div>
-            <NewsCard article={featuredArticle} featured />
+            <FeaturedCarousel articles={featuredArticles} />
           </div>
         </section>
 
@@ -67,18 +73,7 @@ export default async function Home() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {latestArticles.map((article) => (
-                <NewsCard key={article.id} article={article} />
-              ))}
-            </div>
-
-            {/* View All Link */}
-            <div className="text-center mt-10">
-              <button className="px-8 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors">
-                Load More Articles
-              </button>
-            </div>
+            <LoadMoreArticles initialArticles={latestArticles} />
           </div>
         </section>
 
